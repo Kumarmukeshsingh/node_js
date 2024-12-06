@@ -3,7 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-// import { jwt } from 'jsonwebtoken';
+
+
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
@@ -107,6 +108,10 @@ const loginUser = asyncHandler(async (req, res) => {
    // send cookie
 
    const { email, username, password } = req.body
+   console.log(email, username, password);
+
+
+
 
    if (!username && !email) {
       throw new ApiError(400, "user name  and password id required")
@@ -173,7 +178,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       throw new ApiError(401, "unauthorized request ")
    }
    try {
-      const decodedToken = jwt.veryfy(
+      const decodedToken = jwt.verify(
          incomingRefreshToken,
          process.env.ACCESS_TOKEN_SECRET
       )
@@ -189,7 +194,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
          httpOnly: true,
          secure: true,
       }
-      const { accessToken, newrefreshToken } = await generateAccessAndRefreshToken(user_id)
+      const { accessToken, newrefreshToken } = await generateAccessAndRefreshToken(user._id)
       return res
          .status(200)
          .cookie("accessToken", accessToken, options)
@@ -223,10 +228,14 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async (res, req) => {
+console.log(req);
+
    return res
       .status(200)
       .json(new ApiResponse(200, req.user, " current user fetched successfuly "))
 })
+ 
+
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
 
